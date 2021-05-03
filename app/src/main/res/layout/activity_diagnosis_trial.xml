@@ -5,18 +5,18 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity">
-    
+
     <Button
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/buttonSelectImage"
-    android:text="Оберіть фото" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonSelectImage"
+        android:text="Оберіть фото" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/buttonCalculateImage"
-        android:text="Розпочати діагностику" />
+        android:text="Розпочати пробну діагностику" />
 
     <TextView
         android:layout_width="match_parent"
@@ -29,6 +29,6 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:contentDescription="Медична діагностика" />
-   
+
 
 </LinearLayout>

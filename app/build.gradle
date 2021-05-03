@@ -17,6 +17,7 @@ android {
                 install "matplotlib"
                 install "opencv-contrib-python-headless"
                 install "pillow"
+                install "pandas"
             }
         }
 

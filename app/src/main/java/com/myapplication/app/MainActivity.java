@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -18,8 +19,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +33,7 @@ import com.chaquo.python.android.AndroidPlatform;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -119,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
     private int redness_n;
 
     private AlertDialog dialog;
+    private AlertDialog dialogProgress;
 
     private static final int skin_color = 6;
     private static final int eyebrows_alopecia = 150;
@@ -133,6 +139,16 @@ public class MainActivity extends AppCompatActivity {
     private PyObject skinColorObject;
     private PyObject eyebrowsAlopeciaObject;
     private PyObject rednessObject;
+
+    private boolean eyeBagsDetected = false;
+    private boolean blueLipsDetected = false;
+    private boolean redEyesDetected = false;
+    private boolean asymmetricFaceDetected = false;
+    private boolean smileDetected = false;
+    private boolean dryLipsDetected = false;
+    private boolean skinColorDetected = false;
+    private boolean eyebrowsAlopeciaDetected = false;
+    private boolean rednessDetected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,19 +215,37 @@ public class MainActivity extends AppCompatActivity {
                             public void onClick(View v) {
                                 imageString = getStringImage(bitmap);
 
-                                Python py = Python.getInstance();
-                                final PyObject pyobj = py.getModule("script");
+                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                                final View progressView = getLayoutInflater().inflate(R.layout.progress_bar, null);
 
-                                eyeBagsList = pyobj.callAttr("eye_bags_detection", imageString).asList();
-                                blueLipsObject = pyobj.callAttr("blue_lips_detection", imageString);
-                                redEyesList = pyobj.callAttr("red_eyes_detection", imageString).asList();
-                                asymmetricFaceList = pyobj.callAttr("asymmetric_face_detection", imageString).asList();
-                                smileObject = pyobj.callAttr("depression_detection", imageString);
-                                dryLipsObject = pyobj.callAttr("dry_lips_detection", imageString);
-                                skinColorObject = pyobj.callAttr("skin_color_detection", imageString);
-                                eyebrowsAlopeciaObject = pyobj.callAttr("eyebrows_alopecia_detection", imageString);
-                                rednessObject = pyobj.callAttr("redness_detection", imageString);
-                                eyeBagsDetection();
+                                Button okButton = progressView.findViewById(R.id.okButton);
+
+                                dialogBuilder.setView(progressView);
+                                dialog = dialogBuilder.create();
+                                dialog.show();
+
+
+                                okButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        dialog.dismiss();
+                                        Python py = Python.getInstance();
+                                        PyObject pyobj = py.getModule("script");
+
+                                        eyeBagsList = pyobj.callAttr("eye_bags_detection", imageString).asList();
+                                        blueLipsObject = pyobj.callAttr("blue_lips_detection", imageString);
+                                        redEyesList = pyobj.callAttr("red_eyes_detection", imageString).asList();
+                                        asymmetricFaceList = pyobj.callAttr("asymmetric_face_detection", imageString).asList();
+                                        smileObject = pyobj.callAttr("depression_detection", imageString);
+                                        dryLipsObject = pyobj.callAttr("dry_lips_detection", imageString);
+                                        skinColorObject = pyobj.callAttr("skin_color_detection", imageString);
+                                        eyebrowsAlopeciaObject = pyobj.callAttr("eyebrows_alopecia_detection", imageString);
+                                        rednessObject = pyobj.callAttr("redness_detection", imageString);
+
+                                        eyeBagsDetection();
+                                    }
+                                });
+
                             }
                         });
 
@@ -469,6 +503,9 @@ public class MainActivity extends AppCompatActivity {
         if (result < blue_lips){
             createContactDialog("Blue lips detected have you noticed them being blueish?", "BlueLips");
         }
+        else{
+            postSelection("BlueLips", true);
+        }
     }
 
     public void blueLipsNotNoticed(){
@@ -496,6 +533,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (!left_okay || !right_okay){
             createContactDialog("Red eyes detected. Have you noticed them being more red than usual?", "RedEyes");
+        }
+        else{
+            postSelection("RedEyes", true);
         }
     }
 
@@ -535,6 +575,9 @@ public class MainActivity extends AppCompatActivity {
         if (!eyes_okay){
             createContactDialog("Asymmetric eyes detected have you noticed them being more asymmetrical than usual?", "AsymmetricEyes");
         }
+        else{
+            postSelection("AsymmetricEyes", true);
+        }
     }
 
     public void asymmetricEyebrowsDetection(){
@@ -550,6 +593,9 @@ public class MainActivity extends AppCompatActivity {
         if (!eyebrows_okay){
             createContactDialog("Asymmetric eyebrows detected have you noticed them being more asymmetrical than usual?", "AsymmetricEyebrows");
         }
+        else{
+            postSelection("AsymmetricEyebrows", true);
+        }
     }
 
     public void asymmetricLipsDetection(){
@@ -564,6 +610,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (!mouth_okay){
             createContactDialog("Asymmetric mouth detected have you noticed it being more asymmetrical than usual?", "AsymmetricLips");
+        }
+        else{
+            postSelection("AsymmetricLips", true);
         }
     }
 
@@ -592,7 +641,11 @@ public class MainActivity extends AppCompatActivity {
         float result = smileObject.toFloat();
         loadSmileData();
         if (result < smile){
+            smileDetected = true;
             createContactDialog("Smile more often!", "Smile");
+        }
+        else{
+            postSelection("Smile", true);
         }
     }
 
@@ -602,6 +655,9 @@ public class MainActivity extends AppCompatActivity {
         loadDryLipsData();
         if (result > dry_lips){
             createContactDialog("Dry lips detected. Have you noticed them being more dry than usual?", "DryLips");
+        }
+        else{
+            postSelection("DryLips", true);
         }
     }
 
@@ -617,14 +673,17 @@ public class MainActivity extends AppCompatActivity {
 
         if (skin_color_n > 0){
             if (result - skin_color_mean > skin_color || result - skin_color_last > skin_color){
+                skinColorDetected = true;
                 createContactDialog("Skin color changed!", "SkinColor");
             }
             else{
                 float new_mean = (skin_color_mean * skin_color_n + result) / (skin_color_n + 1);
                 saveSkinColorData(new_mean, result, skin_color_n + 1);
+                postSelection("SkinColor", true);
             }
         }else{
             saveSkinColorData(result, result, skin_color_n + 1);
+            postSelection("SkinColor", true);
         }
     }
 
@@ -634,14 +693,17 @@ public class MainActivity extends AppCompatActivity {
         loadEyeBrowsAlopeciaData();
         if (eyebrows_alopecia_n > 0){
             if (eyebrows_alopecia_mean - result > eyebrows_alopecia || eyebrows_alopecia_last - result > eyebrows_alopecia){
+                eyebrowsAlopeciaDetected = true;
                 createContactDialog("Eyebrows alopecia detected!", "EyebrowsAlopecia");
             }
             else{
                 float new_eyebrows_alopecia = (eyebrows_alopecia_mean * eyebrows_alopecia_n + result) / (eyebrows_alopecia_n + 1);
                 saveEyeBrowsAlopeciaData(new_eyebrows_alopecia, result, eyebrows_alopecia_n + 1);
+                postSelection("EyebrowsAlopecia", true);
             }
         } else{
             saveEyeBrowsAlopeciaData(result, result, eyebrows_alopecia_n + 1);
+            postSelection("EyebrowsAlopecia", true);
         }
     }
 
@@ -651,14 +713,17 @@ public class MainActivity extends AppCompatActivity {
         loadRednessData();
         if (redness_n > 0) {
             if (result - redness_mean > redness || result - redness_last > redness) {
+                rednessDetected = true;
                 createContactDialog("Redness detected!", "Redness");
             }
             else{
                 float new_redness = (redness_mean * redness_n + result) / (redness_n + 1);
                 saveRednessData(new_redness, result, redness_n + 1);
+                postSelection("Redness", true);
             }
         } else {
             saveRednessData(result, result, redness_n + 1);
+            postSelection("Redness", true);
         }
     }
 
@@ -668,8 +733,15 @@ public class MainActivity extends AppCompatActivity {
 
         Button yesButton = popupView.findViewById(R.id.yesButton);
         Button noButton = popupView.findViewById(R.id.noButton);
+        Button okButton = popupView.findViewById(R.id.okButton);
         TextView textView = popupView.findViewById(R.id.textQuestion);
         textView.setText(text);
+
+        if (option.equals("SkinColor") || option.equals("EyebrowsAlopecia") || option.equals("Redness")){
+            okButton.setVisibility(View.VISIBLE);
+            yesButton.setVisibility(View.GONE);
+            noButton.setVisibility(View.GONE);
+        }
 
         dialogBuilder.setView(popupView);
         dialog = dialogBuilder.create();
@@ -690,6 +762,71 @@ public class MainActivity extends AppCompatActivity {
                 postSelection(option, false);
             }
         });
+
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                postSelection(option, false);
+            }
+        });
+    }
+
+    public void createResultsDialog(){
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        final View resultsView = getLayoutInflater().inflate(R.layout.results_window, null);
+
+        Button okButton = resultsView.findViewById(R.id.okButton);
+        ListView listView = resultsView.findViewById(R.id.listView);
+
+        dialogBuilder.setView(resultsView);
+        dialog = dialogBuilder.create();
+        dialog.show();
+
+        ArrayList<String> results = new ArrayList<>();
+        if (eyeBagsDetected){
+            results.add("Мішки під очима: \nХронічна алергія, гіпотериоз, сонне апное, захворювання нирок, ураження щитоподібної залози зі зниженням її функції");
+        }
+        if (blueLipsDetected){
+            results.add("Синюваті губи: \nПереохолодження, цианоз, круп, при вагітності – дефіцит заліза, хвороба серця або легень");
+        }
+        if (redEyesDetected){
+            results.add("Червонуваті очі: \nАлергічний кон’юктивіт, язва роговиці, синдром сухого ока, інфекційний кератит, блефарит, інтоксикація, аутоімунні захворювання, грип, ГРВІ");
+        }
+        if (asymmetricFaceDetected){
+            results.add("Надмірна асиметрія лиця: \nПерша ознака інсульту, лицевий параліч");
+        }
+        if (smileDetected){
+            results.add("Опущені кутики губ: \nДепресія");
+        }
+        if (dryLipsDetected){
+            results.add("Сухі губи, що лущаться: \nЗневоднення, діабет, порушення роботи щитовидної залози, дефіцит вітаміна В12 чи заліза");
+        }
+        if (skinColorDetected){
+            results.add("Зміна кольору шкіри (блідість, пожовтіння): \nАнемія, ураження печінки, жовчних шляхів");
+        }
+        if (eyebrowsAlopeciaDetected){
+            results.add("Випадіння брів: \nВогнищева алопеція");
+        }
+        if (rednessDetected){
+            results.add("Почервоніння обличчя: \nПроблеми з травленням (наприклад, при целіакії, непереносимості глютену), алергія, екземи та розацеа.");
+        }
+
+        if (results.isEmpty()){
+            results.add("Симптоми не були помічені!");
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, results);
+
+        listView.setAdapter(adapter);
+
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
     }
 
     public void postSelection(String option, boolean noticed){
@@ -697,31 +834,43 @@ public class MainActivity extends AppCompatActivity {
             case "EyeBags":
                 if (!noticed)
                     eyeBagsNotNoticed();
+                else
+                    eyeBagsDetected = true;
                 blueLipsDetection();
                 break;
             case "BlueLips":
                 if (!noticed)
                     blueLipsNotNoticed();
+                else
+                    blueLipsDetected = true;
                 redEyesDetection();
                 break;
             case "RedEyes":
                 if (!noticed)
                     redEyesNotNoticed();
+                else
+                    redEyesDetected = true;
                 asymmetricEyesDetection();
                 break;
             case "AsymmetricEyes":
                 if (!noticed)
                     asymmetricEyesNotNoticed();
+                else
+                    asymmetricFaceDetected = true;
                 asymmetricEyebrowsDetection();
                 break;
             case "AsymmetricEyebrows":
                 if (!noticed)
                     asymmetricEyebrowsNotNoticed();
+                else
+                    asymmetricFaceDetected = true;
                 asymmetricLipsDetection();
                 break;
             case "AsymmetricLips":
                 if (!noticed)
                     asymmetricLipsNotNoticed();
+                else
+                    asymmetricFaceDetected = true;
                 smileDetection();
                 break;
             case "Smile":
@@ -730,6 +879,8 @@ public class MainActivity extends AppCompatActivity {
             case "DryLips":
                 if (!noticed)
                     dryLipsNotNoticed();
+                else
+                    dryLipsDetected = true;
                 skinColorDetection();
                 break;
             case "SkinColor":
@@ -737,6 +888,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "EyebrowsAlopecia":
                 rednessDetection();
+                break;
+            case "Redness":
+                createResultsDialog();
                 break;
         }
     }

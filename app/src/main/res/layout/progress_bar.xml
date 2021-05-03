@@ -5,38 +5,31 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
-        android:id="@+id/textQuestion"
+        android:id="@+id/textDetecting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:layout_marginTop="10dp"
+        android:text="Проводиться діагностика, будь ласка, зачекайте"
         android:gravity="center_horizontal" />
-
-    <Button
-        android:id="@+id/yesButton"
-        android:layout_width="wrap_content"
+    
+    <ProgressBar
+        android:layout_width="150dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_marginTop="1dp"
-        android:layout_below="@+id/textQuestion"
-        android:text="Так" />
+        android:id="@+id/progressBar"
+        android:layout_below="@+id/textDetecting"/>
 
     <Button
-        android:id="@+id/noButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="1dp"
-        android:layout_below="@+id/yesButton"
-        android:text="Ні" />
-
-    <Button
         android:id="@+id/okButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_marginTop="1dp"
-        android:visibility="gone"
-        android:layout_below="@+id/noButton"
-        android:text="OK" />
+        android:text="OK"
+        android:layout_below="@+id/progressBar"/>
+
+
 </RelativeLayout>

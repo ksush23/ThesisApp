@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="q">
+        <activity android:name=".Diagnosis_trial"></activity>
+        <activity android:name=".Diagnosis" />
+        <activity android:name=".Initialize" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
