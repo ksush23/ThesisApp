@@ -6,6 +6,12 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textInfo"
+        />
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,11 +23,17 @@
         android:layout_height="wrap_content"
         android:id="@+id/buttonCalculateImage"
         android:text="Розпочати ініціалізацію" />
-
-    <TextView
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/resultText"/>
+        android:id="@+id/buttonResults"
+        android:text="Результати" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonBack"
+        android:text="Назад" />
 
     <ImageView
         android:id="@+id/selectedImage"

@@ -7,28 +7,22 @@
     tools:context=".MainActivity">
     
     <Button
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/buttonSelectImage"
-    android:text="Оберіть фото" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonInitialize"
+        android:text="Ініціалізація" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonCalculateImage"
-        android:text="Розпочати діагностику" />
+        android:id="@+id/buttonDiagnosis"
+        android:text="Діагностика" />
 
-    <TextView
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/resultText"/>
-
-    <ImageView
-        android:id="@+id/selectedImage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:contentDescription="Медична діагностика" />
+        android:id="@+id/buttonPriorDiagnosis"
+        android:text="Пробна діагностика" />
    
 
 </LinearLayout>
