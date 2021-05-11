@@ -15,9 +15,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -27,21 +25,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
-
-import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class Initialize extends AppCompatActivity {
 
@@ -50,6 +41,7 @@ public class Initialize extends AppCompatActivity {
     protected static TextView textInfo;
     private static Context context;
     protected static AlertDialog dialog;
+    private List<String> selectedItems;
     protected static ArrayDeque<String> queue;
     protected static String element;
 
@@ -135,7 +127,7 @@ public class Initialize extends AppCompatActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 selectImage();
             }else {
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Відмова у доступі", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -172,8 +164,19 @@ public class Initialize extends AppCompatActivity {
                                 queue.add("SkinColor");
                                 queue.add("EyebrowsAlopecia");
                                 queue.add("Redness");
+                                selectedItems = new ArrayList<>();
+                                selectedItems.add(imageString);
+                                selectedItems.add("EyeBags");
+                                selectedItems.add("BlueLips");
+                                selectedItems.add("RedEyes");
+                                selectedItems.add("AsymmetricFace");
+                                selectedItems.add("Smile");
+                                selectedItems.add("DryLips");
+                                selectedItems.add("SkinColor");
+                                selectedItems.add("EyebrowsAlopecia");
+                                selectedItems.add("Redness");
 
-                                new AsyncTaskCalc(Initialize.this).execute(new String[]{imageString});
+                                new AsyncTaskCalc(Initialize.this, 9).execute(selectedItems);
                             }
                         });
 

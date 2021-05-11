@@ -8,10 +8,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,14 +17,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chaquo.python.Python;
@@ -111,7 +106,7 @@ public class Diagnosis_trial extends AppCompatActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 selectImage();
             }else {
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Відмова у доступі", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -153,21 +148,17 @@ public class Diagnosis_trial extends AppCompatActivity {
                         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                queue = new ArrayDeque<>();
+                                imageString = getStringImage(bitmap);
+                                selectedItems.add(imageString);
                                 for (int i = 0; i < items.length; i++){
                                     if (selected[i]){
                                         selectedItems.add(items[i]);
+                                        queue.add(items[i]);
                                     }
                                 }
-                                imageString = getStringImage(bitmap);
-                                queue = new ArrayDeque<>();
-                                queue.add("EyeBags");
-                                queue.add("BlueLips");
-                                queue.add("RedEyes");
-                                queue.add("AsymmetricFace");
-                                queue.add("Smile");
-                                queue.add("DryLips");
 
-                                new AsyncTaskCalc(Diagnosis_trial.this).execute(new String[]{imageString});
+                                new AsyncTaskCalc(Diagnosis_trial.this, queue.size()).execute(selectedItems);
                             }
                         });
                         builder.setNegativeButton("Відмінити", null);

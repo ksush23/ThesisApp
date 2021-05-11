@@ -1,39 +1,17 @@
 package com.myapplication.app;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Base64;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.chaquo.python.PyObject;
-import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
-
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +20,8 @@ public class MainActivity extends AppCompatActivity {
     private Button initButton;
     private Button diagnosisButton;
     private Button trialDiagnosisButton;
+    private Button clearButton;
+    private AlertDialog dialog;
 
     public static final String SHARED_PREFS = "sharedPrefs";
 
@@ -97,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         initButton = (Button) findViewById(R.id.buttonInitialize);
         diagnosisButton = (Button) findViewById(R.id.buttonDiagnosis);
         trialDiagnosisButton = (Button) findViewById(R.id.buttonPriorDiagnosis);
+        clearButton = (Button) findViewById(R.id.buttonClear);
 
         initButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,6 +95,40 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openActivityTrialDiagnosis();
+            }
+        });
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+                final View popupView = inflater.inflate(R.layout.clean_data, null);
+
+                Button yesButton = popupView.findViewById(R.id.yesButton);
+                Button noButton = popupView.findViewById(R.id.noButton);
+                TextView textView = popupView.findViewById(R.id.textQuestion);
+                String text = "Ви точно хочете видалити всі дані?";
+                textView.setText(text);
+
+                dialogBuilder.setView(popupView);
+                dialog = dialogBuilder.create();
+                dialog.show();
+
+                yesButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        SharedPreferences settings = context.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
+                        settings.edit().clear().commit();
+                    }
+                });
+
+                noButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
             }
         });
     }

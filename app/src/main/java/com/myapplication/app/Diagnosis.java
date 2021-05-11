@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -30,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Diagnosis extends AppCompatActivity {
 
@@ -39,6 +41,11 @@ public class Diagnosis extends AppCompatActivity {
     protected ArrayDeque<String>queue;
     private Button resultsButton;
     private AlertDialog dialog;
+
+    private List<String> selectedItems;
+    private String[] items = {"EyeBags", "BlueLips", "RedEyes", "AsymmetricFace", "Smile", "DryLips", "SkinColor", "EyebrowsAlopecia", "Redness"};
+    private String[] list = {"Мішки під очима", "Синюваті губи", "Червоні очі", "Асиметрія та набряки обличчя", "Опущені кутики губ", "Сухості та лущення губ", "Зміни кольору обличчя", "Випадіння брів", "Червонуватості обличчя"};
+    private Boolean[] selected = {true, true, true, true, true, true, true, true, true};
 
     String imageString = "";
 
@@ -97,7 +104,7 @@ public class Diagnosis extends AppCompatActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 selectImage();
             }else {
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Відмова у доступі", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -121,19 +128,42 @@ public class Diagnosis extends AppCompatActivity {
                         calculateButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                imageString = getStringImage(bitmap);
-                                queue = new ArrayDeque<>();
-                                queue.add("EyeBags");
-                                queue.add("BlueLips");
-                                queue.add("RedEyes");
-                                queue.add("AsymmetricFace");
-                                queue.add("Smile");
-                                queue.add("DryLips");
-                                queue.add("SkinColor");
-                                queue.add("EyebrowsAlopecia");
-                                queue.add("Redness");
+                                // Set up the alert builder
+                                AlertDialog.Builder builder = new AlertDialog.Builder(Diagnosis.this);
+                                builder.setTitle("Оберіть категорії діагностики");
 
-                                new AsyncTaskCalc(Diagnosis.this).execute(new String[]{imageString});
+                                // Add a checkbox list
+                                boolean[] checkedItems = {true, true, true, true, true, true, true, true, true};
+                                selectedItems = new ArrayList<>();
+                                builder.setMultiChoiceItems(list, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                        selected[which] = isChecked;
+                                    }
+                                });
+
+                                // Add OK and Cancel buttons
+                                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        queue = new ArrayDeque<>();
+                                        imageString = getStringImage(bitmap);
+                                        selectedItems.add(imageString);
+                                        for (int i = 0; i < items.length; i++){
+                                            if (selected[i]){
+                                                selectedItems.add(items[i]);
+                                                queue.add(items[i]);
+                                            }
+                                        }
+
+                                        new AsyncTaskCalc(Diagnosis.this, queue.size()).execute(selectedItems);
+                                    }
+                                });
+                                builder.setNegativeButton("Відмінити", null);
+
+                                // Create and show the alert dialog
+                                AlertDialog dialog = builder.create();
+                                dialog.show();
                             }
                         });
 

@@ -1,7 +1,5 @@
 package com.myapplication.app;
 
-import com.chaquo.python.PyObject;
-
 import java.util.List;
 
 public class Modifications {
@@ -27,15 +25,15 @@ public class Modifications {
         int new_g_n = eye_bags_g_n;
         int new_b_n = eye_bags_b_n;
         if (!Detection.red_okay) {
-            new_red = (new_red * eye_bags_r_n + result_r) / (eye_bags_r_n + 1);
+            new_red = (new_red * eye_bags_r_n + result_r) / (eye_bags_r_n + 1) * 1.08f;
             new_r_n += 1;
         }
         if (!Detection.green_okay) {
-            new_green = (new_green * eye_bags_g_n + result_g) / (eye_bags_g_n + 1);
+            new_green = (new_green * eye_bags_g_n + result_g) / (eye_bags_g_n + 1) * 1.08f;
             new_g_n += 1;
         }
         if (!Detection.blue_okay) {
-            new_blue = (new_blue * eye_bags_b_n + result_b) / (eye_bags_b_n + 1);
+            new_blue = (new_blue * eye_bags_b_n + result_b) / (eye_bags_b_n + 1) * 1.08f;
             new_b_n += 1;
         }
 
@@ -48,7 +46,7 @@ public class Modifications {
         List<Float> data = MainActivity.loadBlueLipsData();
         float blue_lips = data.get(0);
         int blue_lips_n = Math.round(data.get(0));
-        float new_blue_lips = (blue_lips * blue_lips_n + result) / (blue_lips_n + 1);
+        float new_blue_lips = (blue_lips * blue_lips_n + result) / (blue_lips_n + 1) * 1.08f;
         MainActivity.saveBlueLipsData(new_blue_lips, blue_lips_n + 1);
     }
 
@@ -62,10 +60,10 @@ public class Modifications {
 
         float new_red;
         if (result_left > result_right){
-            new_red = (red_eyes * red_eyes_n + result_left) / (red_eyes_n + 1);
+            new_red = (red_eyes * red_eyes_n + result_left) / (red_eyes_n + 1) * 1.08f;
         }
         else{
-            new_red = (red_eyes * red_eyes_n + result_right) / (red_eyes_n + 1);
+            new_red = (red_eyes * red_eyes_n + result_right) / (red_eyes_n + 1) * 1.08f;
         }
 
         MainActivity.saveRedEyesData(new_red, red_eyes_n + 1);
@@ -80,7 +78,7 @@ public class Modifications {
         int asymmetric_face_eyes_n = Math.round(data.get(3));
         int asymmetric_face_eyebrows_n = Math.round(data.get(4));
         int asymmetric_face_lips_n = Math.round(data.remove(5));
-        float new_eyes = (asymmetric_face_eyes * asymmetric_face_eyes_n + result_eyes) / (asymmetric_face_eyes_n + 1);
+        float new_eyes = (asymmetric_face_eyes * asymmetric_face_eyes_n + result_eyes) / (asymmetric_face_eyes_n + 1)  * 1.08f;
         MainActivity.saveAsymmetricFaceData(new_eyes, asymmetric_face_eyebrows, asymmetric_face_lips, asymmetric_face_eyes_n + 1,asymmetric_face_eyebrows_n, asymmetric_face_lips_n);
     }
 
@@ -93,7 +91,7 @@ public class Modifications {
         int asymmetric_face_eyes_n = Math.round(data.get(3));
         int asymmetric_face_eyebrows_n = Math.round(data.get(4));
         int asymmetric_face_lips_n = Math.round(data.remove(5));
-        float new_eyebrows = (asymmetric_face_eyebrows * asymmetric_face_eyebrows_n + result_eyebrows) / (asymmetric_face_eyebrows_n + 1);
+        float new_eyebrows = (asymmetric_face_eyebrows * asymmetric_face_eyebrows_n + result_eyebrows) / (asymmetric_face_eyebrows_n + 1) * 1.08f;
         MainActivity.saveAsymmetricFaceData(asymmetric_face_eyes, new_eyebrows, asymmetric_face_lips, asymmetric_face_eyes_n ,asymmetric_face_eyebrows_n + 1, asymmetric_face_lips_n);
     }
 
@@ -106,7 +104,7 @@ public class Modifications {
         int asymmetric_face_eyes_n = Math.round(data.get(3));
         int asymmetric_face_eyebrows_n = Math.round(data.get(4));
         int asymmetric_face_lips_n = Math.round(data.remove(5));
-        float new_lips = (asymmetric_face_lips * asymmetric_face_lips_n + result_lips) / (asymmetric_face_lips_n + 1);
+        float new_lips = (asymmetric_face_lips * asymmetric_face_lips_n + result_lips) / (asymmetric_face_lips_n + 1) * 1.08f;
         MainActivity.saveAsymmetricFaceData(asymmetric_face_eyes, asymmetric_face_eyebrows, new_lips, asymmetric_face_eyes_n ,asymmetric_face_eyebrows_n, asymmetric_face_lips_n + 1);
     }
 
@@ -115,9 +113,7 @@ public class Modifications {
         List<Float> data = MainActivity.loadDryLipsData();
         float dry_lips = data.get(0);
         int dry_lips_n = Math.round(data.get(1));
-        float new_lips = (dry_lips * dry_lips_n + result) / (dry_lips_n + 1);
+        float new_lips = (dry_lips * dry_lips_n + result) / (dry_lips_n + 1) * 1.08f;
         MainActivity.saveDryLipsData(new_lips, dry_lips_n + 1);
     }
-
-
 }
